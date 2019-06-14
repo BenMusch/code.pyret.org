@@ -1350,12 +1350,21 @@
         // click will toggle the decimal representation of that
         // number.  Note that this feature abandons the convenience of
         // publishing output via the CodeMirror textarea.
+        if (jsnums.isUnitnum(num)) {
+          var unitString = jsnums.unitToString(jsnums.getUnit(num));
+          if (unitString !== "") {
+            unitString = "<" + unitString + ">"
+          }
+          var units = $("<span>").text(unitString);
+          var renderedNum = renderPNumber(num.n);
+          return $("<span>").append(renderedNum).append(units);
+        }
         if (jsnums.isRational(num) && !jsnums.isInteger(num)) {
           // This function returns three string values, numerals to
           // appear before the decimal point, numerals to appear
           // after, and numerals to be repeated.
-          var numr = num.numerator();
-          var denr = num.denominator();
+          var numr = num.numerator(runtime.NumberErrbacks);
+          var denr = num.denominator(runtime.NumberErrbacks);
           var decimal = jsnums.toRepeatingDecimal(numr, denr, runtime.NumberErrbacks);
           var prePointString = decimal[0];
           var postPointString = decimal[1];
