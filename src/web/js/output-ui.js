@@ -1351,11 +1351,39 @@
         // number.  Note that this feature abandons the convenience of
         // publishing output via the CodeMirror textarea.
         if (jsnums.isUnitnum(num)) {
-          var unitString = jsnums.unitToString(jsnums.getUnit(num));
-          if (unitString !== "") {
-            unitString = "<" + unitString + ">"
+          var u = jsnums.getUnit(num);
+          var normalizedUnitString = "%<" + jsnums.unitToString(u) + ">";
+
+          var fracUnitString = jsnums.unitToString(jsnums.unitNumerator(u));
+          var denominatorString = jsnums.unitToString(jsnums.unitDenominator(u));
+          if (denominatorString !== "1") {
+            var parens = function(s) {
+              if (s.indexOf("*") !== -1 || s.indexOf("^") !== -1) {
+                return "(" + s + ")";
+              }
+              return s;
+            }
+            fracUnitString = parens(fracUnitString) + " / " + parens(denominatorString);
           }
-          var units = $("<span>").text(unitString);
+          var fracUnitString = "%<" + fracUnitString + ">";
+
+          var units = $("<span>").addClass("replToggle replTextOutput unit")
+            .data("next-text", fracUnitString)
+            .text(normalizedUnitString);
+          // TODO: cleanup
+          var isClick = false;
+          units.click(function(e) {
+            if (isClick) {
+              var curText = units.text();
+              units.text(units.data("next-text"));
+              units.data("next-text", curText);
+            }
+            e.stopPropagation();
+          }).mousedown(function () {
+            isClick = true;
+          }).mousemove(function () {
+            isClick = false;
+          });
           var renderedNum = renderPNumber(num.n);
           return $("<span>").append(renderedNum).append(units);
         }
