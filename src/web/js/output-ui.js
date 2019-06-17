@@ -1390,17 +1390,28 @@
             container.append($("<span>").addClass("symbol").text(" / "));
             container.append(denContainer);
           }
+
           var u = jsnums.getUnit(num);
-          var container = $("<span>")
+          var unitContainer = $("<span>")
             .addClass("units replTextOutput")
             .append($("<span>").addClass("langle").text("%<"));
-          var fracContainer = $("<span>").addClass("frac");
-          renderFracUnit(u, fracContainer);
-          container.append(fracContainer);
-          container.append($("<span>").text(">"));
+          var cycleContainer = $("<span>").addClass("replCycle replToggle");
+
+          var normalized  = $("<span>").addClass("cycleTarget");
+          normalized.click(toggleCycle);
+          renderFancyUnit(u, normalized);
+
+          var frac = $("<span>").addClass("frac cycleTarget");
+          renderFracUnit(u, frac);
+          frac.click(toggleCycle);
+          frac.addClass("hidden");
+
+          cycleContainer.append([normalized, frac]);
+          unitContainer.append(cycleContainer);
+          unitContainer.append($("<span>").text(">"));
 
           var renderedNum = renderPNumber(num.n);
-          return $("<span>").append(renderedNum).append(container);
+          return $("<span>").append(renderedNum).append(unitContainer);
         }
         if (jsnums.isRational(num) && !jsnums.isInteger(num)) {
           // This function returns three string values, numerals to

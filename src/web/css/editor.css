@@ -790,7 +790,7 @@ div#font-label:hover{
    margin-bottom: 0em;
 }
 
-.replToggle > .hidden { display: none; }
+.replToggle > .hidden { display: none !important; }
 
 /* definition lists for objects */
 .replOutput.expanded > dl > .collapsed, .replOutput.expanded > .collapsed { display: none; }
@@ -2024,7 +2024,7 @@ button.controller {
     clip: rect(1px, 1px, 1px, 1px);
 }
 
-.units > .frac {
+.units .frac {
     display: inline-block;
     position: relative;
     text-align: center;
@@ -2033,11 +2033,11 @@ button.controller {
     margin-right: 0.1em;
 }
 
-.units > .frac .num {
+.units .frac .num {
     border-bottom: 1px solid black;
 }
 
-.units > .frac .num:after {
+.units .frac .num:after {
     content: "\A";
 }
 
