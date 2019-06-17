@@ -2023,3 +2023,32 @@ button.controller {
     clip: rect(1px 1px 1px 1px);
     clip: rect(1px, 1px, 1px, 1px);
 }
+
+.units > .frac {
+    display: inline-block;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: 0.3em;
+    margin-right: 0.1em;
+}
+
+.units > .frac .num {
+    border-bottom: 1px solid black;
+}
+
+.units > .frac .num:after {
+    content: "\A";
+}
+
+.units .symbol {
+    font-size: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.units .langle { margin-right: -0.2em; }
+
+.units span.factor { margin-left: 0.2em; }
+
+.units sup { vertical-align: super !important; }

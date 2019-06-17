@@ -1351,41 +1351,56 @@
         // number.  Note that this feature abandons the convenience of
         // publishing output via the CodeMirror textarea.
         if (jsnums.isUnitnum(num)) {
-          var u = jsnums.getUnit(num);
-          var normalizedUnitString = "%<" + jsnums.unitToString(u) + ">";
+          var renderFancyUnit = function(unit, container) {
+            if (jsnums.checkUnit(unit, {})) {
+              container.append($("<span>").addClass("factor").text("1"))
+              return;
+            }
 
-          var fracUnitString = jsnums.unitToString(jsnums.unitNumerator(u));
-          var denominatorString = jsnums.unitToString(jsnums.unitDenominator(u));
-          if (denominatorString !== "1") {
-            var parens = function(s) {
-              if (s.indexOf("*") !== -1 || s.indexOf("^") !== -1) {
-                return "(" + s + ")";
+            var asList = jsnums.unitToList(unit);
+            for (var i = 0; i < asList.length; i++) {
+              var factor = asList[i];
+              if (i !== 0) container.append($("<span>").addClass("symbol").text(" * "));
+              var factorContainer = $("<span>").addClass("factor");
+              factorContainer.append($("<span>").text(factor.name));
+              if (factor.pow !== 1) {
+                factorContainer.append($("<span>").addClass("symbol").text(" ^ "))
+                factorContainer.append($("<sup>").text(factor.pow));
               }
-              return s;
+              container.append(factorContainer);
             }
-            fracUnitString = parens(fracUnitString) + " / " + parens(denominatorString);
           }
-          var fracUnitString = "%<" + fracUnitString + ">";
 
-          var units = $("<span>").addClass("replToggle replTextOutput unit")
-            .data("next-text", fracUnitString)
-            .text(normalizedUnitString);
-          // TODO: cleanup
-          var isClick = false;
-          units.click(function(e) {
-            if (isClick) {
-              var curText = units.text();
-              units.text(units.data("next-text"));
-              units.data("next-text", curText);
-            }
-            e.stopPropagation();
-          }).mousedown(function () {
-            isClick = true;
-          }).mousemove(function () {
-            isClick = false;
-          });
+          var renderFracUnit = function(unit, container) {
+            var num = jsnums.unitNumerator(unit);
+            var den = jsnums.unitDenominator(unit);
+
+            var numContainer = $("<span>").addClass("num");
+            var denContainer = $("<span>").addClass("den");
+
+            numContainer.append($("<span>").addClass("symbol").text("("))
+            renderFancyUnit(num, numContainer);
+            numContainer.append($("<span>").addClass("symbol").text(")"))
+
+            denContainer.append($("<span>").addClass("symbol").text("("))
+            renderFancyUnit(den, denContainer);
+            denContainer.append($("<span>").addClass("symbol").text(")"))
+
+            container.append(numContainer);
+            container.append($("<span>").addClass("symbol").text(" / "));
+            container.append(denContainer);
+          }
+          var u = jsnums.getUnit(num);
+          var container = $("<span>")
+            .addClass("units replTextOutput")
+            .append($("<span>").addClass("langle").text("%<"));
+          var fracContainer = $("<span>").addClass("frac");
+          renderFracUnit(u, fracContainer);
+          container.append(fracContainer);
+          container.append($("<span>").text(">"));
+
           var renderedNum = renderPNumber(num.n);
-          return $("<span>").append(renderedNum).append(units);
+          return $("<span>").append(renderedNum).append(container);
         }
         if (jsnums.isRational(num) && !jsnums.isInteger(num)) {
           // This function returns three string values, numerals to
